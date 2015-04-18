@@ -1,0 +1,17 @@
+{
+  "name": "maccath/baun-categories",
+  "description": "A categories plugin for BaunCMS",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Katy Ereira",
+      "email": "katy.ereira@gmail.com"
+    }
+  ],
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "BaunPlugin\\Categories\\": "src/"
+    }
+  }
+}
