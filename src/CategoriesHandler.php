@@ -2,6 +2,11 @@
 
 namespace BaunPlugin\Categories;
 
+use \Dflydev\DotAccessData\Data;
+use \Baun\Interfaces\Router;
+use \Baun\Interfaces\Events;
+use \Baun\Interfaces\Theme;
+
 /**
  * Class CategoriesHandler
  *
@@ -9,18 +14,30 @@ namespace BaunPlugin\Categories;
  */
 class CategoriesHandler
 {
+    /**
+     * @var Data configuration data
+     */
     private $config;
+    /**
+     * @var Router router provider
+     */
     private $router;
+    /**
+     * @var Events events provider
+     */
     private $events;
+    /**
+     * @var Theme theme provider
+     */
     private $theme;
 
     /**
-     * @param $config
-     * @param $router
-     * @param $events
-     * @param $theme
+     * @param Data   $config
+     * @param Router $router
+     * @param Events $events
+     * @param Theme  $theme
      */
-    public function __construct($config, $router, $events, $theme) {
+    public function __construct(Data $config, Router $router, Events $events, Theme $theme) {
         $this->config = $config;
         $this->router = $router;
         $this->events = $events;
@@ -28,7 +45,7 @@ class CategoriesHandler
     }
 
     /**
-     * @param $posts array posts to check
+     * @param array $posts array of posts to check
      * @return array of category names belonging to the given posts
      */
     public function findCategories($posts)
@@ -92,11 +109,22 @@ class CategoriesHandler
         }
     }
 
+    /**
+     * @param $category string a category name
+     *
+     * @return string path for the given $category name
+     */
     private function getPath($category)
     {
         return $this->config->get('plugins-maccath-baun-categories-categories.category_url') . $category;
     }
 
+    /**
+     * @param $posts array of posts
+     * @param $page string a numeric page index
+     *
+     * @return array the subset of $posts that belong to the page $page
+     */
     private function getPostsForPage($posts, $page)
     {
         if (!$posts) {
@@ -117,6 +145,11 @@ class CategoriesHandler
         return $pages[$chunk];
     }
 
+    /**
+     * @param $posts array of posts
+     *
+     * @return int the number of pages that $posts will span
+     */
     private function countPages($posts)
     {
         if (!$posts) {
