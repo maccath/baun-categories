@@ -15,12 +15,17 @@ class Categories extends Plugin
     public function init()
     {
         $this->events->addListener('baun.afterGlobals', function($event, $theme) {
-            $theme->addGlobal('category_url', $this->config->get('categories.category_url'));
+            $theme->addGlobal('category_url', $this->config->get('plugins-maccath-baun-categories-categories.category_url'));
         });
 
         $this->events->addListener('baun.filesToPosts', function($event, $allPosts) {
-            $categoriesSetup = new CategoriesHandler($allPosts);
-            $this->events->emit('baun.categoriesFound', $categoriesSetup->findCategories());
+            $categoriesSetup = new CategoriesHandler($this->config, $this->router, $this->events, $this->theme);
+            $allCategories = $categoriesSetup->findCategories($allPosts);
+
+            if (!empty($allCategories)) {
+                $this->events->emit('baun.categoriesFound', $allCategories);
+                $categoriesSetup->addCategoryRoutes($allCategories, $allPosts);
+            }
         });
     }
 }

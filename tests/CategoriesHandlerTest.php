@@ -5,16 +5,27 @@
  */
 class CategoriesTest extends PHPUnit_Framework_TestCase
 {
+    private $categoriesHandler;
+
     /**
-     * Assert that no categories are found when $allPosts is null
+     * Tests set-up
      */
-    public function testFindCategoriesWhenAllPostsNull()
-    {
-        $allPosts = null;
+    public function setUp() {
+        // Set up dummy configuration
+        $config = new Dflydev\DotAccessData\Data(array(
+            'plugins-maccath-baun-categories-categories' => array(
+                'category_url' => '/categories/'
+            ),
+            'blog' => array(
+                'posts_per_page' => '5'
+            )
+        ));
 
-        $categoriesSetup = new \BaunPlugin\Categories\CategoriesHandler($allPosts);
+        $router = $this->getMockBuilder('\Baun\Providers\Router')->disableOriginalConstructor()->getMock();
+        $events = $this->getMockBuilder('\Baun\Providers\Events')->disableOriginalConstructor()->getMock();
+        $theme  = $this->getMockBuilder('\Baun\Providers\Theme')->disableOriginalConstructor()->getMock();
 
-        $this->assertEquals(array(), $categoriesSetup->findCategories($allPosts));
+        $this->categoriesHandler = new \BaunPlugin\Categories\CategoriesHandler($config, $router, $events, $theme);
     }
 
     /**
@@ -22,11 +33,9 @@ class CategoriesTest extends PHPUnit_Framework_TestCase
      */
     public function testFindCategoriesWhenNoPosts()
     {
-        $allPosts = array();
-
-        $categoriesSetup = new \BaunPlugin\Categories\CategoriesHandler($allPosts);
-
-        $this->assertEquals(array(), $categoriesSetup->findCategories($allPosts));
+        $this->assertEquals(array(), $this->categoriesHandler->findCategories(array()));
+        $this->assertEquals(array(), $this->categoriesHandler->findCategories(null));
+        $this->assertEquals(array(), $this->categoriesHandler->findCategories(false));
     }
 
     /**
@@ -42,9 +51,7 @@ class CategoriesTest extends PHPUnit_Framework_TestCase
             array()
         );
 
-        $categoriesSetup = new \BaunPlugin\Categories\CategoriesHandler($allPosts);
-
-        $this->assertEquals(array(), $categoriesSetup->findCategories($allPosts));
+        $this->assertEquals(array(), $this->categoriesHandler->findCategories($allPosts));
     }
 
     /**
@@ -69,8 +76,167 @@ class CategoriesTest extends PHPUnit_Framework_TestCase
             ),
         );
 
-        $categoriesSetup = new \BaunPlugin\Categories\CategoriesHandler($allPosts);
+        $this->assertEquals(array('reading', 'minimalism', 'food'), $this->categoriesHandler->findCategories($allPosts));
+    }
 
-        $this->assertEquals(array('reading', 'minimalism', 'food'), $categoriesSetup->findCategories($allPosts));
+    /**
+     * Assert that getPath returns correct path for category name
+     */
+    public function testGetPathForCategoryName() {
+        $reflector = new ReflectionClass('\BaunPlugin\Categories\CategoriesHandler');
+        $method = $reflector->getMethod('getPath');
+        $method->setAccessible(true);
+
+        $this->assertEquals('/categories/reading', $method->invokeArgs($this->categoriesHandler, array('reading')));
+    }
+
+    /**
+     * Assert that getPostsForPage returns no posts if no posts exist
+     */
+    public function testGetPostsForFirstPageWhenNoPosts() {
+        $reflector = new ReflectionClass('\BaunPlugin\Categories\CategoriesHandler');
+        $method = $reflector->getMethod('getPostsForPage');
+        $method->setAccessible(true);
+
+        $this->assertEquals(0, count($method->invokeArgs($this->categoriesHandler, array(array(), 1))));
+        $this->assertEquals(0, count($method->invokeArgs($this->categoriesHandler, array(false, 1))));
+    }
+
+    /**
+     * Assert that getPostsForPage returns 5 posts for the first page
+     */
+    public function testGetPostsForFirstPage() {
+        $allPosts = array(
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+        );
+
+        $reflector = new ReflectionClass('\BaunPlugin\Categories\CategoriesHandler');
+        $method = $reflector->getMethod('getPostsForPage');
+        $method->setAccessible(true);
+
+        $this->assertEquals(5, count($method->invokeArgs($this->categoriesHandler, array($allPosts, 1))));
+    }
+
+    /**
+     * Assert that getPostsForPage returns 2 posts for the second page
+     */
+    public function testGetPostsForSecondPage() {
+        $allPosts = array(
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+        );
+
+        $reflector = new ReflectionClass('\BaunPlugin\Categories\CategoriesHandler');
+        $method = $reflector->getMethod('getPostsForPage');
+        $method->setAccessible(true);
+
+        $this->assertEquals(2, count($method->invokeArgs($this->categoriesHandler, array($allPosts, 2))));
+    }
+
+    /**
+     * Assert that getPostsForPage returns 2 posts for the last page if fetching a page that doesn't exist
+     */
+    public function testGetPostsForPageThatDoesntExist() {
+        $allPosts = array(
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+        );
+
+        $reflector = new ReflectionClass('\BaunPlugin\Categories\CategoriesHandler');
+        $method = $reflector->getMethod('getPostsForPage');
+        $method->setAccessible(true);
+
+        $this->assertEquals(2, count($method->invokeArgs($this->categoriesHandler, array($allPosts, 10))));
+    }
+
+    /**
+     * Assert that getPostsForPage returns 5 posts for the first page if not specifying a page number
+     */
+    public function testGetPostsForFirstPageIfNoPageSpecified() {
+        $allPosts = array(
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+        );
+
+        $reflector = new ReflectionClass('\BaunPlugin\Categories\CategoriesHandler');
+        $method = $reflector->getMethod('getPostsForPage');
+        $method->setAccessible(true);
+
+        $this->assertEquals(5, count($method->invokeArgs($this->categoriesHandler, array($allPosts, false))));
+    }
+
+    /**
+     * Assert that getPostsForPage returns 5 posts for the first page if specifying a negative page number
+     */
+    public function testGetPostsForFirstPageIfNegativePageSpecified() {
+        $allPosts = array(
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+        );
+
+        $reflector = new ReflectionClass('\BaunPlugin\Categories\CategoriesHandler');
+        $method = $reflector->getMethod('getPostsForPage');
+        $method->setAccessible(true);
+
+        $this->assertEquals(5, count($method->invokeArgs($this->categoriesHandler, array($allPosts, -1))));
+    }
+
+    /**
+     * Assert that countPages returns 0 if no posts exist
+     */
+    public function testCountPagesForNoPosts() {
+        $reflector = new ReflectionClass('\BaunPlugin\Categories\CategoriesHandler');
+        $method = $reflector->getMethod('countPages');
+        $method->setAccessible(true);
+
+        $this->assertEquals(0, $method->invokeArgs($this->categoriesHandler, array(array())));
+        $this->assertEquals(0, $method->invokeArgs($this->categoriesHandler, array(false)));
+    }
+
+    /**
+     * Assert that countPages returns 2 if 5 posts per page and 7 posts
+     */
+    public function testCountPagesFor7Posts5PerPage() {
+        $allPosts = array(
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+            array(),
+        );
+
+        $reflector = new ReflectionClass('\BaunPlugin\Categories\CategoriesHandler');
+        $method = $reflector->getMethod('countPages');
+        $method->setAccessible(true);
+
+        $this->assertEquals(2, $method->invokeArgs($this->categoriesHandler, array($allPosts)));
     }
 }
