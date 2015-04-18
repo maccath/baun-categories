@@ -17,6 +17,10 @@ Add the following lines to your composer.json file:
 
 ### Configuration
 
+Add the following line to your `config/plugins.php` file:
+
+    'BaunPlugin\Categories\Categories',
+
 Run the following command inside your project directory:
 
     php baun publish:config maccath/baun-categories
