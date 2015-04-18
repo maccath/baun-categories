@@ -14,7 +14,7 @@ class CategoriesTest extends PHPUnit_Framework_TestCase
         // Set up dummy configuration
         $config = new Dflydev\DotAccessData\Data(array(
             'plugins-maccath-baun-categories-categories' => array(
-                'category_url' => '/categories/'
+                'category_url' => 'categories/'
             ),
             'blog' => array(
                 'posts_per_page' => '5'

@@ -156,7 +156,7 @@ class CategoriesHandler
      */
     private function getPath($category)
     {
-        return $this->config->get('plugins-maccath-baun-categories-categories.category_url') . $category;
+        return '/' . $this->config->get('plugins-maccath-baun-categories-categories.category_url') . $category;
     }
 
     /**
