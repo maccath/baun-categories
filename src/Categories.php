@@ -18,14 +18,19 @@ class Categories extends Plugin
             $theme->addGlobal('category_url', $this->config->get('plugins-maccath-baun-categories-categories.category_url'));
         });
 
-        $this->events->addListener('baun.filesToPosts', function($event, $allPosts) {
-            $categoriesSetup = new CategoriesHandler($this->config, $this->router, $this->events, $this->theme);
-            $allCategories = $categoriesSetup->findCategories($allPosts);
+        $categoriesHandler = new CategoriesHandler($this->config, $this->router, $this->events, $this->theme);
+
+        $this->events->addListener('baun.filesToPosts', function($event, $allPosts) use ($categoriesHandler) {
+            $allCategories = $categoriesHandler->findCategories($allPosts);
 
             if (!empty($allCategories)) {
                 $this->events->emit('baun.categoriesFound', $allCategories);
-                $categoriesSetup->addCategoryRoutes($allCategories, $allPosts);
+                $categoriesHandler->addCategoryRoutes($allCategories, $allPosts);
             }
+        });
+
+        $this->events->addListener('baun.beforePostRender', function($event, $template, $data) use ($categoriesHandler) {
+            $data->info->categorylinks = $categoriesHandler->getCategoriesLinks(array($data));
         });
     }
 }

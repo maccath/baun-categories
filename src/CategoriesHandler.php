@@ -14,6 +14,7 @@ use \Baun\Interfaces\Theme;
  */
 class CategoriesHandler
 {
+
     /**
      * @var Data configuration data
      */
@@ -57,6 +58,9 @@ class CategoriesHandler
         }
 
         foreach ($posts as $post) {
+
+            $post = json_decode(json_encode($post), true);
+
             if (!isset($post['info']['categories']) || !$post['info']['categories']) {
                 continue;
             }
@@ -107,6 +111,23 @@ class CategoriesHandler
                 ]);
             });
         }
+    }
+
+    /**
+     * @param array $posts the posts whose category links to retrieve
+     *
+     * @return array of links to the categories belonging to $posts
+     */
+    public function getCategoriesLinks($posts)
+    {
+        $categories = $this->findCategories($posts);
+
+        $categoryLinks = array();
+        foreach ($categories as $category) {
+            $categoryLinks[] = "<a href='{$this->getPath($category)}'>{$category}</a>";
+        }
+
+        return $categoryLinks;
     }
 
     /**
