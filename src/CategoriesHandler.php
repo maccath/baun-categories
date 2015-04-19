@@ -2,10 +2,10 @@
 
 namespace BaunPlugin\Categories;
 
-use \Dflydev\DotAccessData\Data;
-use \Baun\Interfaces\Router;
-use \Baun\Interfaces\Events;
-use \Baun\Interfaces\Theme;
+use Baun\Interfaces\Events;
+use Baun\Interfaces\Router;
+use Baun\Interfaces\Theme;
+use Dflydev\DotAccessData\Data;
 
 /**
  * Class CategoriesHandler
@@ -38,7 +38,8 @@ class CategoriesHandler
      * @param Events $events
      * @param Theme  $theme
      */
-    public function __construct(Data $config, Router $router, Events $events, Theme $theme) {
+    public function __construct(Data $config, Router $router, Events $events, Theme $theme)
+    {
         $this->config = $config;
         $this->router = $router;
         $this->events = $events;
@@ -47,6 +48,7 @@ class CategoriesHandler
 
     /**
      * @param array $posts array of posts to check
+     *
      * @return array of category names belonging to the given posts
      */
     public function findCategories($posts)
@@ -111,6 +113,23 @@ class CategoriesHandler
                 ]);
             });
         }
+
+        $this->router->add('GET',
+            $this->config->get('plugins-maccath-baun-categories-categories.category_url'),
+            function () use ($allCategories) {
+                $categories = array();
+                foreach ($allCategories as $category) {
+                    $categories[] = array(
+                        'name' => $category,
+                        'link' => $this->getPath($category)
+                    );
+                }
+
+                return $this->theme->render('categories', [
+                    'categories' => $categories,
+                ]);
+            }
+        );
     }
 
     /**
@@ -137,7 +156,7 @@ class CategoriesHandler
      */
     private function getPath($category)
     {
-        return $this->config->get('plugins-maccath-baun-categories-categories.category_url') . $category;
+        return '/' . $this->config->get('plugins-maccath-baun-categories-categories.category_url') . $category;
     }
 
     /**
