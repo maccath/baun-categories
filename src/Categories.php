@@ -15,10 +15,11 @@ class Categories extends Plugin
     public function init()
     {
         $this->theme->addPath(__DIR__ . '/templates');
-        $categoriesPath = $this->config->get('plugins-maccath-baun-categories-categories.category_url');
+        $config = $this->config->get('plugins-maccath-baun-categories-categories');
 
-        $this->events->addListener('baun.afterGlobals', function($event, $theme) use ($categoriesPath) {
-            $theme->addGlobal('category_url', $categoriesPath);
+        $this->events->addListener('baun.afterGlobals', function($event, $theme) use ($config) {
+            $theme->addGlobal('category_url', $config['category_url']);
+            $theme->addGlobal('categories_title', $config['title']);
         });
 
         $categoriesHandler = new CategoriesHandler($this->config, $this->router, $this->events, $this->theme);
@@ -29,8 +30,6 @@ class Categories extends Plugin
             if (!empty($allCategories)) {
                 $this->events->emit('baun.categoriesFound', $allCategories);
                 $categoriesHandler->addCategoryRoutes($allCategories, $allPosts);
-
-
             }
         });
 
@@ -38,6 +37,14 @@ class Categories extends Plugin
             $data->info->categorylinks = $categoriesHandler->getCategoriesLinks(array($data));
         });
 
-
+        $this->events->addListener('baun.filesToNav', function($event, $navigation, $navigationObject) use ($config) {
+            if (!$config['exclude_from_nav']) {
+                $navigationObject->nodes[] = array(
+                    'title' => $config['title'],
+                    'url' => $config['category_url'],
+                    'active' => false
+                );
+            }
+        });
     }
 }
