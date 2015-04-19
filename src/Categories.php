@@ -42,7 +42,7 @@ class Categories extends Plugin
                 $navigationObject->nodes[] = array(
                     'title' => $config['title'],
                     'url' => $config['category_url'],
-                    'active' => false
+                    'active' => $this->router->currentUri() == $config['category_url']
                 );
             }
         });
