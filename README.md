@@ -71,8 +71,29 @@ categories can be configured in the configuration file found at `config/plugins/
 ### Editing the categories page template
 
 Inside your themes directory (typically `public/themes/themeName/`), create `categories.html`. This file can be 
-customised to display a list of categories however you like. The following example is the default file contents, which
-simply displays an unordered list of categories:
+customised to display a list of categories and their posts however you like.
+
+The following example is the default file contents, which simply displays an unordered list of categories and their 
+posts:
+
+    {% extends "layout.html" %}
+    
+    {% block content %}
+    <h1>{{ categories_title }}</h1>
+    <ul>
+        {% for category in categories %}
+        <li><a href="{{ category.link }}">{{ category.name }}</a>
+            <ul>
+                {% for post in category.posts %}
+                <li><a href="{{ base_url }}/{{ post.route }}">{{ post.title }}</a> - <date>{{ post.published }}</date></li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endblock %}
+
+For a categories page that doesn't list posts:
 
     {% extends "layout.html" %}
     
