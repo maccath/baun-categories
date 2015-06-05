@@ -110,6 +110,7 @@ class CategoriesHandler
                     'all_posts'  => $categoryPosts,
                     'posts'      => $this->getPostsForPage($categoryPosts, $page),
                     'pagination' => $postsPagination,
+                    'current_category' => $category,
                 ]);
             });
         }
