@@ -91,12 +91,7 @@ class CategoriesHandler
             $this->router->add('GET', $this->getPath($category), function () use ($category, $allPosts) {
                 $page = isset($_GET['page']) && $_GET['page'] ? abs(intval($_GET['page'])) : 1;
 
-                $categoryPosts = array();
-                foreach ($allPosts as $post) {
-                    if (in_array($category, $this->findCategories(array($post))) !== false) {
-                        $categoryPosts[] = $post;
-                    }
-                }
+                $categoryPosts = $this->getPostsForCategory($category, $allPosts);
 
                 $postsPagination = [
                     'total_pages'  => $this->countPages($categoryPosts),
