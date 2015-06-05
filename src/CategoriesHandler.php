@@ -117,12 +117,13 @@ class CategoriesHandler
 
         $this->router->add('GET',
             $this->config->get('plugins-maccath-baun-categories-categories.category_url'),
-            function () use ($allCategories) {
+            function () use ($allCategories, $allPosts) {
                 $categories = array();
                 foreach ($allCategories as $category) {
                     $categories[] = array(
                         'name' => $category,
-                        'link' => $this->getPath($category)
+                        'link' => $this->getPath($category),
+                        'posts' => $this->getPostsForCategory($category, $allPosts),
                     );
                 }
 
@@ -148,6 +149,23 @@ class CategoriesHandler
         }
 
         return $categoryLinks;
+    }
+
+    /**
+     * @param $category string a category name
+     * @param $posts array of posts to search
+     *
+     * @return array of posts that belong to the given category
+     */
+    public function getPostsForCategory($category, $posts)
+    {
+        foreach ($posts as $key => $post) {
+            if (in_array($category, $this->findCategories(array($post))) === false) {
+                unset($posts[$key]);
+            }
+        }
+
+        return $posts;
     }
 
     /**

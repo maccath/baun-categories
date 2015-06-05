@@ -4,7 +4,14 @@
 <h1>{{ categories_title }}</h1>
 <ul>
     {% for category in categories %}
-    <li><a href="{{ category.link }}">{{ category.name }}</a></li>
+    <li>
+        <a href="{{ category.link }}">{{ category.name }}</a>
+        <ul>
+            {% for post in category.posts %}
+            <li><a href="{{ base_url }}/{{ post.route }}">{{ post.title }}</a> - <date>{{ post.published }}</date></li>
+            {% endfor %}
+        </ul>
+    </li>
     {% endfor %}
 </ul>
 {% endblock %}

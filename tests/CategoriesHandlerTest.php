@@ -239,4 +239,50 @@ class CategoriesTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(2, $method->invokeArgs($this->categoriesHandler, array($allPosts)));
     }
+
+    /**
+     * Assert that getting posts for the 'reading' category returns all posts assigned to 'reading' category
+     */
+    public function testAssignPostsToCategories() {
+        $allPosts = array(
+            array(
+                'title' => 'one',
+                'info' => array(
+                    'categories' => 'reading, minimalism'
+                )
+            ),
+            array(
+                'title' => 'two',
+                'info' => array(
+                    'categories' => 'reading, food'
+                )
+            ),
+            array(
+                'title' => 'three',
+                'info' => array(
+                )
+            ),
+        );
+
+        $readingPosts = array(
+            array(
+                'title' => 'one',
+                'info' => array(
+                    'categories' => 'reading, minimalism'
+                )
+            ),
+            array(
+                'title' => 'two',
+                'info' => array(
+                    'categories' => 'reading, food'
+                )
+            )
+        );
+
+        $reflector = new ReflectionClass('\BaunPlugin\Categories\CategoriesHandler');
+        $method = $reflector->getMethod('getPostsForCategory');
+        $method->setAccessible(true);
+
+        $this->assertEquals($readingPosts, $method->invokeArgs($this->categoriesHandler, array('reading', $allPosts)));
+    }
 }
