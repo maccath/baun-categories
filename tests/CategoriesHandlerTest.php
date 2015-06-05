@@ -91,6 +91,39 @@ class CategoriesTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Assert that getPath ignores case
+     */
+    public function testGetPathForCategoryNameCaseInsensitive() {
+        $reflector = new ReflectionClass('\BaunPlugin\Categories\CategoriesHandler');
+        $method = $reflector->getMethod('getPath');
+        $method->setAccessible(true);
+
+        $this->assertEquals('/categories/caseinsensitive', $method->invokeArgs($this->categoriesHandler, array('CaSeInSeNsItIvE')));
+    }
+
+    /**
+     * Assert that getPath replaces spaces
+     */
+    public function testGetPathForCategoryNameWithSpaces() {
+        $reflector = new ReflectionClass('\BaunPlugin\Categories\CategoriesHandler');
+        $method = $reflector->getMethod('getPath');
+        $method->setAccessible(true);
+
+        $this->assertEquals('/categories/some-spaces', $method->invokeArgs($this->categoriesHandler, array('Some Spaces')));
+    }
+
+    /**
+     * Assert that getPath translates special characters
+     */
+    public function testGetPathForCategoryNameWithSpecialChars() {
+        $reflector = new ReflectionClass('\BaunPlugin\Categories\CategoriesHandler');
+        $method = $reflector->getMethod('getPath');
+        $method->setAccessible(true);
+
+        $this->assertEquals('/categories/c%40egor%25', $method->invokeArgs($this->categoriesHandler, array('C@egor%')));
+    }
+
+    /**
      * Assert that getPostsForPage returns no posts if no posts exist
      */
     public function testGetPostsForFirstPageWhenNoPosts() {
