@@ -8,7 +8,12 @@
       "email": "katy.ereira@gmail.com"
     }
   ],
-  "require": {},
+  "require": {
+    "bauncms/framework": "1.4.*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.6.*"
+  },
   "autoload": {
     "psr-4": {
       "BaunPlugin\\Categories\\": "src/"
