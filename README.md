@@ -6,29 +6,20 @@ A categories plugin for BaunCMS
 
 ### Using Composer
 
-Some of the features in this plug-in rely on my development branch of the Baun CMS Framework. I have created pull 
-requests, but in the meantime please change `composer.json` in your Baun application to contain the following 
-repositories:
+Alter the `composer.json` in your Baun application to contain the following repository:
 
     "repositories": [
       {
         "type": "vcs",
         "url": "https://github.com/maccath/baun-categories"
       },
-      {
-        "type": "vcs",
-        "url": "https://github.com/maccath/Framework"
-      }
     ],
     
 And alter the `require` portion of `composer.json` to contain the following lines:
 
     "require": {
         "maccath/baun-categories": "dev-master",
-        "bauncms/framework": "dev-develop"
     },
-    
-I will update these installation instructions once the applicable changes make it back into the Baun CMS Framework.
 
 ### Configuration
 
