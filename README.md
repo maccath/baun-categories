@@ -6,19 +6,14 @@ A categories plugin for BaunCMS
 
 ### Using Composer
 
-Alter the `composer.json` in your Baun application to contain the following repository:
+Install using composer on the commandline:
 
-    "repositories": [
-      {
-        "type": "vcs",
-        "url": "https://github.com/maccath/baun-categories"
-      },
-    ],
-    
-And alter the `require` portion of `composer.json` to contain the following lines:
+    composer require maccath/baun-categories
 
+Or in `composer.json`:
+ 
     "require": {
-        "maccath/baun-categories": "dev-master",
+        "maccath/baun-categories": "1.*",
     },
 
 ### Configuration
